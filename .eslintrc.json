@@ -8,6 +8,9 @@
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
     "react/no-unescaped-entities": 0 ,
-    "no-empty": false
+    "no-empty": false,
+    "@typescript-eslint/restrict-template-expressions": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-unnecessary-type-assertion":"error"
   }
 }
