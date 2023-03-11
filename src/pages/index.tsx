@@ -9,6 +9,7 @@ import Post from "y/components/Post";
 import CreateForm from "y/components/CreateForm";
 
 const Home: NextPage = () => {
+  const { data:posts } = api.post.getAllPosts.useQuery();
   return (
     <>
       <Head>
@@ -19,7 +20,9 @@ const Home: NextPage = () => {
       <main className="min-h-screen bg-black py-4 ">
         <div className="mx-auto max-w-5xl space-y-2">
           <CreateForm />
-        
+          {posts?.map((post)=>(
+            <Post post={post} />
+          ))}
         </div>
       </main>
     </>
