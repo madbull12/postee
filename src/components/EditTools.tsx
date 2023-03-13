@@ -27,13 +27,13 @@ const EditTools = ({ id }:{ id:string }) => {
     };
   return (
     <div className='absolute flex text-gray-400 items-center gap-x-2 bottom-2 right-2'>
-        <button onClick={handleDeletePost}>
+        <button onClick={handleDeletePost} className="hover:text-cyan-500">
             <IoTrash />
         </button>
         <button onClick={()=>{
             setPostId(id)
             setModal(true)
-        }}>
+        }} className="hover:text-cyan-500">
             <MdOutlineEditNote className='text-lg' />
         </button>
     </div>
