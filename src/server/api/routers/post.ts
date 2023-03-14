@@ -63,6 +63,12 @@ export const postRouter = createTRPCRouter({
     return ctx.prisma.post.findMany({
       include: {
         author: true,
+        comments:{
+          include:{
+            author:true,
+            childComments:true
+          }
+        }
       },
       orderBy: {
         createdAt: "desc",

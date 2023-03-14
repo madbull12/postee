@@ -7,9 +7,12 @@ import { api } from "y/utils/api";
 import { useEffect, useState } from "react";
 import Post from "y/components/Post";
 import CreateForm from "y/components/CreateForm";
+import PostList from "y/components/PostList";
+import { PostWithPayload } from "types";
+import { BiLoader, BiLoaderAlt } from "react-icons/bi";
 
 const Home: NextPage = () => {
-  const { data:posts } = api.post.getAllPosts.useQuery();
+  const { data: posts, isLoading } = api.post.getAllPosts.useQuery();
   return (
     <>
       <Head>
@@ -20,9 +23,16 @@ const Home: NextPage = () => {
       <main className="min-h-screen bg-black py-4 ">
         <div className="mx-auto max-w-5xl space-y-2">
           <CreateForm />
+          {/* <div className="space-y-4">
           {posts?.map((post)=>(
             <Post post={post} />
           ))}
+          </div> */}
+          {isLoading ? (
+            <BiLoaderAlt className="text-4xl text-cyan-500 animate-spin" />
+          ) : (
+            <PostList posts={posts as PostWithPayload[]} />
+          )}
         </div>
       </main>
     </>
