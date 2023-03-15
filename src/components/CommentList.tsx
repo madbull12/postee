@@ -1,13 +1,13 @@
 import React from 'react'
 import { CommentWithPayload, PostWithPayload } from 'types'
-import Post from './Post'
+import Comment from './Comment'
 
 
-const CommentList = ({ comments }:{ comments:CommentWithPayload[] }) => {
+const CommentList = ({ comments,postId }:{ comments:CommentWithPayload[],postId:string }) => {
   return (
     <div className="space-y-4">
     {comments?.map((comment) => (
-      <Post post={comment as CommentWithPayload} />
+      <Comment postId={postId} comment={comment as CommentWithPayload}  />
     ))}
   </div>
   )

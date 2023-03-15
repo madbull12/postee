@@ -6,20 +6,23 @@ import Avatar from "./Avatar";
 import EditTools from "./EditTools";
 import { toast } from "react-hot-toast";
 import CommentForm from "./CommentForm";
+import CommentList from "./CommentList";
 
-type UnionKeys<T> = T extends T ? keyof T : never;
-type StrictUnionHelper<T, TAll> =
-  T extends any
-  ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
+// type UnionKeys<T> = T extends T ? keyof T : never;
+// type StrictUnionHelper<T, TAll> =
+//   T extends any
+//   ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
 
-type StrictUnion<T> = StrictUnionHelper<T, T>
+// type StrictUnion<T> = StrictUnionHelper<T, T>
 
-type Post = StrictUnion<PostWithPayload | CommentWithPayload>
+// type Post = StrictUnion<PostWithPayload | CommentWithPayload>
 
 const Post = ({
   post,
+  isComment
 }: {
-  post: Post;
+  post: PostWithPayload;
+  isComment:boolean
 }) => {
   const { data: session } = useSession();
 
@@ -56,17 +59,24 @@ const Post = ({
         {isReplying ? "Cancel" : "Reply"}
       </button>
       {isReplying ? (
-        <div className="ml-3">
+        <div className="border-l-4 pl-4 border-neutral-600">
           <CommentForm
             text={textComment}
             onChange={handleChangeComment}
             postId={post.id}
+            parentId={null}
+            isComment={false}
+            
           />
         </div>
       ) : null}
+      
 
       {post.comments.length > 0 ? (
-        <></>
+        <div className="pl-4  border-neutral-700 border-l-4">
+        <CommentList comments={post.comments as CommentWithPayload[]} postId={post.id} />
+
+        </div>
       ) : null}
     </>
   );

@@ -66,7 +66,11 @@ export const postRouter = createTRPCRouter({
         comments:{
           include:{
             author:true,
-            childComments:true
+            childComments:{
+              include:{
+                author:true
+              }
+            }
           }
         }
       },

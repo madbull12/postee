@@ -9,11 +9,10 @@ export type PostWithPayload = Prisma.PostGetPayload<{
 export type CommentWithPayload = Prisma.CommentGetPayload<{
     include:{
         author:true,
-        comments:{
+        childComments:{
             include:{
-                author:true,
-                childComments:true
-              }
+                author:true
+            }
         }
     }
 }>

@@ -1,16 +1,53 @@
-import React from 'react'
+import React from "react";
+import { toast } from "react-hot-toast";
+import { api } from "y/utils/api";
 
 interface IProps {
-  text:string;
-  onChange:(e: React.FormEvent<HTMLTextAreaElement>)=>void;
-  postId:string;
+  text: string;
+  onChange: (e: React.FormEvent<HTMLTextAreaElement>) => void;
+  postId: string;
+  parentId?: string | null;
+  isComment:boolean;
 }
-const CommentForm = ({ text,onChange,postId  }:IProps) => {
-  return (
-    <form>
-        <textarea onChange={onChange} placeholder="Comment here..." className='text-sm resize-none outline-none px-2 py-1 text-neutral-500 mb-4 bg-transparent border border-neutral-800 w-full' />
-    </form>
-  )
-}
+const CommentForm = ({ text, onChange, postId, parentId,isComment }: IProps) => {
+  const utils = api.useContext();
+  const { mutateAsync: createComment } = api.comment.createComment.useMutation({
+    onSettled: async () => {
+      await utils.post.getAllPosts.invalidate();
+    },
+  });
+  const { mutateAsync: createFirstComment } = api.comment.createFirstComment.useMutation({
+    onSettled: async () => {
+      await utils.post.getAllPosts.invalidate();
+    },
+  });
 
-export default CommentForm
+  const handleAddComment = async (e:React.ChangeEvent<HTMLFormElement>) => {e
+    e.preventDefault();
+
+
+    await toast.promise(
+     isComment ? createComment({ postId, parentId: parentId as string, text }) : createFirstComment({ postId, text }),
+      {
+        loading: "Adding a comment",
+        success: "Comment successfully added",
+        error: (err) => `Oops... something went wrong ${err}`,
+      }
+    );
+  };
+
+  return (
+    <form onSubmit={handleAddComment} >
+      <textarea
+        onChange={onChange}
+        placeholder="Comment here..."
+        className="mb-4 w-full resize-none border border-neutral-800 bg-transparent px-2 py-1 text-sm text-neutral-500 outline-none"
+      />
+      <button className="bg-neutral-700 px-2 py-1 text-xs font-semibold uppercase tracking-tight text-neutral-300">
+        Submit
+      </button>
+    </form>
+  );
+};
+
+export default CommentForm;

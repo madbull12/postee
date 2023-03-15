@@ -6,7 +6,7 @@ const PostList = ({ posts }: { posts: PostWithPayload[] }) => {
   return (
     <div className="space-y-4">
       {posts?.map((post) => (
-        <Post post={post as PostWithPayload}  />
+        <Post post={post as PostWithPayload} isComment={false}  />
       ))}
     </div>
   );
