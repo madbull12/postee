@@ -1,6 +1,8 @@
 import { useSession } from 'next-auth/react'
 import React,{ useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { CommentWithPayload } from 'types'
+import { api } from 'y/utils/api'
 import Avatar from './Avatar'
 import CommentForm from './CommentForm'
 
@@ -8,10 +10,30 @@ const Comment = ({ comment,postId }: { comment:CommentWithPayload,postId:string 
     const { data:session } = useSession();
   const [isReplying, setIsReplying] = useState(false);
   const [textComment, setTextComment] = useState("");
+  const utils = api.useContext();
+  const { mutateAsync: createComment } = api.comment.createComment.useMutation({
+    onSettled: async () => {
+      await utils.post.getAllPosts.invalidate();
+    },
+  });
   const handleChangeComment = (e: React.FormEvent<HTMLTextAreaElement>) => {
     setTextComment(e.currentTarget.value);
   };
-  console.log(comment.parentId)
+  const handleAddComment = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsReplying(false)
+
+    await toast.promise(
+      createComment({ postId: postId, text: textComment,parentId:comment.id }),
+      {
+        loading: "Adding a comment",
+        success: "Comment successfully added",
+        error: (err) => `Oops... something went wrong ${err}`,
+      }
+    );
+  };
+
+  console.log(comment.childComments)
 
   return (
     <>
@@ -36,11 +58,8 @@ const Comment = ({ comment,postId }: { comment:CommentWithPayload,postId:string 
     {isReplying ? (
       <div className="pl-4 border-l-4 border-neutral-600">
         <CommentForm
-          text={textComment}
+        onSubmit={handleAddComment}
           onChange={handleChangeComment}
-          postId={postId}
-          parentId={comment.id}
-          isComment={true}
         />
       </div>
     ) : null}

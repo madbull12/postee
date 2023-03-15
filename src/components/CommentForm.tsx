@@ -3,41 +3,39 @@ import { toast } from "react-hot-toast";
 import { api } from "y/utils/api";
 
 interface IProps {
-  text: string;
   onChange: (e: React.FormEvent<HTMLTextAreaElement>) => void;
-  postId: string;
-  parentId?: string | null;
-  isComment:boolean;
+ 
+  onSubmit:(e:React.ChangeEvent<HTMLFormElement>) => void
 }
-const CommentForm = ({ text, onChange, postId, parentId,isComment }: IProps) => {
-  const utils = api.useContext();
-  const { mutateAsync: createComment } = api.comment.createComment.useMutation({
-    onSettled: async () => {
-      await utils.post.getAllPosts.invalidate();
-    },
-  });
-  const { mutateAsync: createFirstComment } = api.comment.createFirstComment.useMutation({
-    onSettled: async () => {
-      await utils.post.getAllPosts.invalidate();
-    },
-  });
+const CommentForm = ({  onChange, onSubmit }: IProps) => {
+  // const utils = api.useContext();
+  // const { mutateAsync: createComment } = api.comment.createComment.useMutation({
+  //   onSettled: async () => {
+  //     await utils.post.getAllPosts.invalidate();
+  //   },
+  // });
+  // const { mutateAsync: createFirstComment } = api.comment.createFirstComment.useMutation({
+  //   onSettled: async () => {
+  //     await utils.post.getAllPosts.invalidate();
+  //   },
+  // });
 
-  const handleAddComment = async (e:React.ChangeEvent<HTMLFormElement>) => {e
-    e.preventDefault();
+  // const handleAddComment = async (e:React.ChangeEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
 
-    await toast.promise(
-     isComment ? createComment({ postId, parentId: parentId as string, text }) : createFirstComment({ postId, text }),
-      {
-        loading: "Adding a comment",
-        success: "Comment successfully added",
-        error: (err) => `Oops... something went wrong ${err}`,
-      }
-    );
-  };
+  //   await toast.promise(
+  //    isComment ? createComment({ postId, parentId: parentId as string, text }) : createFirstComment({ postId, text }),
+  //     {
+  //       loading: "Adding a comment",
+  //       success: "Comment successfully added",
+  //       error: (err) => `Oops... something went wrong ${err}`,
+  //     }
+  //   );
+  // };
 
   return (
-    <form onSubmit={handleAddComment} >
+    <form onSubmit={onSubmit} >
       <textarea
         onChange={onChange}
         placeholder="Comment here..."

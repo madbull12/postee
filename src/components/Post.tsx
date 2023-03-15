@@ -19,11 +19,18 @@ import CommentList from "./CommentList";
 
 const Post = ({
   post,
-  isComment
+  isComment,
 }: {
   post: PostWithPayload;
-  isComment:boolean
+  isComment: boolean;
 }) => {
+  const utils = api.useContext();
+  const { mutateAsync: createFirstComment } =
+    api.comment.createFirstComment.useMutation({
+      onSettled: async () => {
+        await utils.post.getAllPosts.invalidate();
+      },
+    });
   const { data: session } = useSession();
 
   const [isReplying, setIsReplying] = useState(false);
@@ -32,6 +39,20 @@ const Post = ({
 
   const handleChangeComment = (e: React.FormEvent<HTMLTextAreaElement>) => {
     setTextComment(e.currentTarget.value);
+  };
+
+  const handleAddComment = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsReplying(false)
+
+    await toast.promise(
+      createFirstComment({ postId: post.id, text: textComment }),
+      {
+        loading: "Adding a comment",
+        success: "Comment successfully added",
+        error: (err) => `Oops... something went wrong ${err}`,
+      }
+    );
   };
 
   return (
@@ -43,8 +64,7 @@ const Post = ({
         </div>
         {post?.title ? (
           <h1 className="text-lg font-semibold md:text-xl">{post.title}</h1>
-
-        ):null}
+        ) : null}
 
         <p className="text-xs text-gray-400 md:text-sm">{post.content}</p>
 
@@ -59,23 +79,20 @@ const Post = ({
         {isReplying ? "Cancel" : "Reply"}
       </button>
       {isReplying ? (
-        <div className="border-l-4 pl-4 border-neutral-600">
+        <div className="border-l-4 border-neutral-600 pl-4">
           <CommentForm
-            text={textComment}
+            onSubmit={handleAddComment}
             onChange={handleChangeComment}
-            postId={post.id}
-            parentId={null}
-            isComment={false}
-            
           />
         </div>
       ) : null}
-      
 
       {post.comments.length > 0 ? (
-        <div className="pl-4  border-neutral-700 border-l-4">
-        <CommentList comments={post.comments as CommentWithPayload[]} postId={post.id} />
-
+        <div className="border-l-4  border-neutral-700 pl-4">
+          <CommentList
+            comments={post.comments.filter((comment)=>comment.parentId ===null) as CommentWithPayload[]}
+            postId={post.id}
+          />
         </div>
       ) : null}
     </>

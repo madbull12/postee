@@ -67,6 +67,7 @@ export const postRouter = createTRPCRouter({
           include:{
             author:true,
             childComments:{
+              take:10,
               include:{
                 author:true
               }
